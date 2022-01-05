@@ -26,6 +26,7 @@ public:
 
     void SetUniformMat3(mat3, const char* uniform);
     void SetUniformVec3(vec3, const char* uniform);
+    void SetUniformVec2(vec2, const char* uniform);
 
 
 

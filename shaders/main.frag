@@ -2,6 +2,11 @@
 
 out vec4 FragColor;
 
+uniform vec2 iResolution;
+
 void main(){
-    FragColor = vec4(1.0 , 0, 1.0 ,1.0);
+    vec2 pos = gl_FragCoord.xy;
+    
+
+    FragColor = vec4(pos.x/iResolution.x , 0, 0 ,1.0);
 }

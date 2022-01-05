@@ -1,5 +1,6 @@
 #include "shader.hpp"
 #include <glad/glad.h>
+#include <glm/gtc/type_ptr.hpp>
 #include <sstream>
 #include <fstream>
 #include <string>
@@ -123,4 +124,11 @@ void Shader::Bind() const
 void Shader::Unbind() const
 {
     glUseProgram(0);
+}
+
+void Shader::SetUniformVec2(vec2 a, const char* uniform) 
+{
+    int loc=glGetUniformLocation(m_ID, uniform);
+    if(loc!=-1)
+        glUniform2fv(loc,1,value_ptr(a));
 }

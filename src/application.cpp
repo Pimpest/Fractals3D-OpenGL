@@ -80,6 +80,11 @@ int main()
             Input::checkKeyPress(window);
 
             Input::applyPendingChanges();
+            
+            glClearColor(0.0f, 0.0f, 1.0f, 1.0f);
+            glClear(GL_COLOR_BUFFER_BIT);
+
+            shader.SetUniformVec2(vec2(window->getWidth(),window->getHeight()), "iResolution");
 
             glDrawElements(GL_TRIANGLES, 6 , GL_UNSIGNED_INT, 0);
 
