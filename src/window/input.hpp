@@ -33,6 +33,7 @@ namespace Input
     vec3 movement = vec3(0,0,0);
     double time=0;
     double xp=0,yp=0;
+    double inputCooldown=1;
     float sensitivity=1.0;
     float fov=90;
     
@@ -73,19 +74,26 @@ namespace Input
     }
 
     void cursorPosition(GLFWwindow *win, double x, double y){
-        if(glfwGetInputMode(win,GLFW_CURSOR)==GLFW_CURSOR_DISABLED){
-
+        if(glfwGetInputMode(win,GLFW_CURSOR)==GLFW_CURSOR_DISABLED&&inputCooldown<=0){
             double sens;
             glfwGetWindowSize(win,&w,&h);
             sens=sensitivity * radians(((float)fov))/w;
             rotation+= vec3((y),(x),0) * (float)sens;
             glfwSetCursorPos(win, 0, 0);
         }
+        else if(glfwGetInputMode(win,GLFW_CURSOR)==GLFW_CURSOR_DISABLED){
+            inputCooldown -= 0.5;
+            glfwSetCursorPos(win, 0, 0);
+        }
+        else{
+            inputCooldown = 1;
+        }
     }
 
     void applyPendingChanges(){
         double timeDelta=glfwGetTime()-time;
         time += timeDelta;
+
         cam->moveCam(cam->GetRotMat3() * movement * (float)timeDelta);
         
         rotation.z *= timeDelta;
