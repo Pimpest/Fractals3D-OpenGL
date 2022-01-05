@@ -28,7 +28,7 @@
 namespace Input
 {
 
-    Camera *cam = new Camera(0., 2., -2.);
+    Camera *cam = new Camera(0., 0., -5.);
     vec3 rotation = vec3(0,0,0);
     vec3 movement = vec3(0,0,0);
     double time=0;
@@ -46,29 +46,29 @@ namespace Input
         }
 
         if(win->isKeyPressed(FOWARD)){
-            movement.z+=0.1;
+            movement.z+=1.;
         }
         if(win->isKeyPressed(BACK)){
-            movement.z-=0.1;
+            movement.z-=1.;
         }
         if(win->isKeyPressed(LEFT)){
-            movement.x-=0.1;
+            movement.x-=1.;
         }
         if(win->isKeyPressed(RIGHT)){
-            movement.x+=0.1;
+            movement.x+=1.;
         }
         if(win->isKeyPressed(UP)){
-            movement.y+=0.1;
+            movement.y+=1.;
         }
         if(win->isKeyPressed(DOWN)){
-            movement.z-=0.1;
+            movement.y-=1.;
         }
 
         if(win->isKeyPressed(ROLL_L)){
-            rotation.z+=0.1;
+            rotation.z+=1;
         }
-        if(win->isKeyPressed(DOWN)){
-            rotation.z-=0.1;
+        if(win->isKeyPressed(ROLL_R)){
+            rotation.z-=1;
         }
     }
 
@@ -77,7 +77,7 @@ namespace Input
 
             double sens;
             glfwGetWindowSize(win,&w,&h);
-            sens=sensitivity * radians(((float)fov/w));
+            sens=sensitivity * radians(((float)fov))/w;
             rotation+= vec3((y),(x),0) * (float)sens;
             glfwSetCursorPos(win, 0, 0);
         }
@@ -86,10 +86,12 @@ namespace Input
     void applyPendingChanges(){
         double timeDelta=glfwGetTime()-time;
         time += timeDelta;
-        cam->moveCam(movement * (float)timeDelta);
+        cam->moveCam(cam->GetRotMat3() * movement * (float)timeDelta);
         
         rotation.z *= timeDelta;
+
         cam->rotateCam(rotation);
+
         rotation = vec3(0);
         movement = vec3(0);
     }
