@@ -1,7 +1,7 @@
 #version 330
 
-#define MAX_STEPS 128
-#define MAX_DIST 1000f
+#define MAX_STEPS 256
+#define MAX_DIST 1000.f
 
 out vec4 FragColor;
 
@@ -24,6 +24,9 @@ vec4 march(vec3 rd,vec3 ro){
     for(float i=0;i<MAX_STEPS;i++){
         float d=map2world(d0*rd+ro);
         if(d<0.0001){
+
+
+
             return vec4(0. , 1. - i/50 , i/50 ,1.);
         }
         d0+=d;
