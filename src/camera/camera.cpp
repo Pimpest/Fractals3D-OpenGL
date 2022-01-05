@@ -13,7 +13,8 @@ void Camera::moveCam(vec3 d){
 }
 
 void Camera::rotateCam(vec3 r){
-    m_orientation= m_orientation*quat(length(r), normalize(r));    
+    if (r!=vec3(0,0,0))
+        m_orientation = m_orientation * quat( cosf(length(r)/2), sinf(length(r)/2) * normalize(r));    
 }
 
 mat3 Camera::GetRotMat3(){

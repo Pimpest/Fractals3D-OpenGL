@@ -3,12 +3,14 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>
 
+#define GLM_FORCE_RADIANS
+
 using namespace glm;
 
 class Camera{
 private:
     vec3 m_pos;
-    quat m_orientation=quat(0. , 0., 1., 0.);
+    quat m_orientation=quat(cosf(0)  ,sinf(0) * vec3(0. , 1.0 ,0.0));
     float m_speed=0.5;
     float m_TanFOV;
     
