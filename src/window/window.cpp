@@ -30,7 +30,7 @@ Window::Window(int width, int height, const char *windowName, bool focusOnLock)
     glfwSetWindowUserPointer(m_window, this);
 
 
-    glfwSetWindowSizeCallback(m_window, Window::windowResizeCallback);
+    glfwSetFramebufferSizeCallback(m_window, Window::windowResizeCallback);
     if(focusOnLock){
         glfwSetWindowFocusCallback(m_window,windowFocusedCallback);
     }
@@ -54,6 +54,10 @@ void Window::makeContextCurrent()
 void Window::setSize(int w, int h)
 {
     glViewport(0, 0, w, h);
+    
+    m_height=h;
+    m_width=w;
+    
 }
 
 bool Window::shouldClose()
@@ -64,6 +68,7 @@ bool Window::shouldClose()
 void Window::swapBuffer()
 {
     glfwSwapBuffers(m_window);
+    
 }
 
 void Window::windowResizeCallback(GLFWwindow *w, int width, int height)

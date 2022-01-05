@@ -40,7 +40,7 @@ int main()
     {
         Window* window=new Window(1280, 720, "RayMarcher",true);
         window->setMouseCallback(Input::cursorPosition);
-
+        glfwSwapInterval(0);
         glEnable(GL_DEBUG_OUTPUT);
         glDebugMessageCallback(glErrorCallback, 0);
 
@@ -73,7 +73,6 @@ int main()
         shader.linkProgram();
 
         shader.Bind();
-
 
         while(!window->shouldClose()){
             
