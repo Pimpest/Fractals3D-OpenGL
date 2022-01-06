@@ -8,11 +8,11 @@
 
 #ifdef _DEBUG
 #define D(X) X
-#define ASSERT(X)      \
-    if (X)             \
-    {                  \
-        __asm("int3"); \
-    }
+    #ifdef __GNUC__
+        #define ASSERT(X) if(X) __asm("int3");
+    #else
+        #define ASSERT(X)
+    #endif
 #else
 #define D(X)
 #define ASSERT(X)
