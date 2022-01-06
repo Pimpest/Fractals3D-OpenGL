@@ -18,6 +18,18 @@ float DE_sphere(vec3 p){
 }
 
 
+float DE_segment(vec3 p)
+{
+    float r = 1.5f;
+
+    vec3 a = vec3(0,0.75,1);
+    vec3 b = vec3(10.0,0.75,0.0);
+
+    vec3 pa = p - a, ba = b - a;
+    float h = clamp( dot(pa,ba)/dot(ba,ba), 0.0, 1.0 );
+    return length( pa - ba*h ) - r;
+}
+
 
 float map2world(vec3 p){
     
