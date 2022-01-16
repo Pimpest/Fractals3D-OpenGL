@@ -67,7 +67,7 @@ int main()
         Shader shader;
 
         shader.addVshader("assets/vertex.vert");
-        shader.addFshader("assets/main.frag");
+        shader.addFshader("assets/fragment.frag");
         
 
         shader.linkProgram();
