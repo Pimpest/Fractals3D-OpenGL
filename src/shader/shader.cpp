@@ -133,6 +133,13 @@ void Shader::SetUniformVec2(vec2 a, const char* uniform)
         glUniform2fv(loc,1,value_ptr(a));
 }
 
+void Shader::SetUniform1f(float a, const char* uniform) 
+{
+    int loc=glGetUniformLocation(m_ID, uniform);
+    if(loc!=-1)
+        glUniform1f(loc, a);
+}
+
 void Shader::SetUniformVec3(vec3 a, const char* uniform) 
 {
     int loc=glGetUniformLocation(m_ID, uniform);

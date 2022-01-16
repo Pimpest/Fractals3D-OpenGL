@@ -74,6 +74,8 @@ int main()
 
         shader.Bind();
 
+        shader.SetUniform1f(Input::cam->getTanFov(), "iFov");
+
         while(!window->shouldClose()){
             
             Input::checkKeyPress(window);
