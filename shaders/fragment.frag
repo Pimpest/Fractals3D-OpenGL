@@ -103,11 +103,40 @@ float DE_Tetra(vec3 z)
     return pow(2.0, -float(n))*min(min(udTriangle(z,a2,a3,a1),udTriangle(z,a1,a2,a4)),min(udTriangle(z,a1,a4,a3),udTriangle(z,a4,a2,a3) ) );
 }
 
+float DE_Mandelbulb(vec3 pos){
+
+    float power = 8.0;
+    vec3 w=pos;
+    float dz = 1.0;
+    float d = dot(w,w);
+
+    //vec3 pol = vec3(dot(w,w), acos(w.y/wr), atan(w.x,w.z));
+
+    for(int i=0;i<7;i++){
+        dz = power * pow(d,(power-1.0)/2.0)*dz+1.0;
+
+        float r = length(w);
+        float theata = power * acos(w.y/r);
+        float phi = power*atan(w.x,w.z);
+        w = pos + pow(r,power) * vec3( sin(theata)*sin(phi), cos(theata), sin(theata)*cos(phi));
+
+        d=dot(w,w);
+        if(d>256.0) break;
+
+
+    }
+    return 0.25*log(d)*sqrt(d)/dz;
+
+}
+
+
+
+
 
 vec4 map(vec3 pos){
 
     //vec3 p =mod(1 + pos,2.0 )-1.0;
-    float d = DE_Menger(pos);
+    float d = DE_Mandelbulb(pos);
     
     
     return vec4(d,pos);
