@@ -20,7 +20,7 @@ void glfwErrorCallback(int error, const char* desc){
     exit(EXIT_FAILURE);
 }
 void glErrorCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* desc, const void* userParam){
-    std::cout<<((type == GL_DEBUG_TYPE_ERROR)? "[Error]: ":"[WARNING]; ")<< "TYPE = 0x"<<" SEVERITY = 0x" << severity << "\n" << desc << std::endl;
+    std::cout<<((type == GL_DEBUG_TYPE_ERROR)? "[Error]: ":"[WARNING]: ")<< "TYPE = 0x"<<" SEVERITY = 0x" << severity << "\n" << desc << std::endl;
 
     if(type == GL_DEBUG_TYPE_ERROR){
         ASSERT(true)
