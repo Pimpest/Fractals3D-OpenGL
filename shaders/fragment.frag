@@ -62,21 +62,15 @@ float DE_Menger(vec3 p){
 
     float d = sdCube(p,vec3(base));
 
-    float c = 0;
-
-    float s = 1.0;
+    float s = base;
 
     for(int i=0;i<3;i++){
-        vec3  point = mod(p*s, 2.0*base) - base;
-        s *= 3.0;
-        vec3 r = base - 3.0*abs(point);
+        vec3  point = mod(p+s, 2.0*s) - s;
+        s /= 3.0;
+        float c = - sdInfSide(point,s);
 
-
-        float c = sdInfSide(r,base)/s;
         d = max(d,c);
-
     }
-
 
     return d;
 
