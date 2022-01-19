@@ -6,6 +6,7 @@ uniform vec2 iResolution;
 uniform vec3 iPosition;
 uniform mat3 iDirection;
 uniform float iFov;
+uniform float iTime;
 
 
 float sdSphere(vec3 p,float r)
@@ -103,16 +104,18 @@ float DE_Tetra(vec3 z)
     return pow(2.0, -float(n))*min(min(udTriangle(z,a2,a3,a1),udTriangle(z,a1,a2,a4)),min(udTriangle(z,a1,a4,a3),udTriangle(z,a4,a2,a3) ) );
 }
 
-float DE_Mandelbulb(vec3 pos){
+float DE_Mandelbulb(vec3 pos,out vec3 color){
 
-    float power = 8.0;
+    float power = 13.0;//(sin(0.1*mod(iTime,20.0*3.1414))*0.5+0.5)*6.0+2.0;
     vec3 w=pos;
     float dz = 1.0;
     float d = dot(w,w);
 
     //vec3 pol = vec3(dot(w,w), acos(w.y/wr), atan(w.x,w.z));
 
-    for(int i=0;i<7;i++){
+    vec4 trap = vec4(abs(w),d);
+
+    for(int i=0;i<5;i++){
         dz = power * pow(d,(power-1.0)/2.0)*dz+1.0;
 
         float r = length(w);
@@ -121,25 +124,35 @@ float DE_Mandelbulb(vec3 pos){
         w = pos + pow(r,power) * vec3( sin(theata)*sin(phi), cos(theata), sin(theata)*cos(phi));
 
         d=dot(w,w);
+        trap = min(trap, vec4(abs(w),d));
         if(d>256.0) break;
 
 
     }
+
+    color = trap.yzw/max(max(trap.x,trap.y),max(trap.z,trap.w));
+
+    vec3 col = vec3(0.01);
+		col = mix( col, vec3(0.5804, 0.4941, 0.2118), clamp(trap.y,0.0,1.0) );
+	 	col = mix( col, vec3(0.0196, 0.3294, 0.4549), clamp(trap.z*trap.z,0.0,1.0) );
+        col = mix( col, vec3(0.702, 0.0196, 0.6471), clamp(pow(trap.w,6.0),0.0,1.0) );
+        col *= 0.5;
+    color = col;
+
     return 0.25*log(d)*sqrt(d)/dz;
 
 }
 
 
-
-
-
 vec4 map(vec3 pos){
 
     //vec3 p =mod(1 + pos,2.0 )-1.0;
-    float d = DE_Mandelbulb(pos);
+
+    vec3 color=vec3(8.00, 6.00, 4.00);
+    float d = DE_Mandelbulb(pos,color);
     
     
-    return vec4(d,pos);
+    return vec4(d,color);
 }
 
 vec3 calcNormal(vec3 pos)
@@ -165,19 +178,36 @@ vec4 march(vec3 ro,vec3 rd){
     return res;
 }
 
+float calcOcclusion(vec3 pos,vec3 nor )
+{
+	float occ = 0.0;
+    float sca = 1.0;
+    for( int i=0; i<5; i++ )
+    {
+        float h = 0.01 + 0.11*float(i)/4.0;
+        vec3 opos = pos + h*nor;
+        float d = map(opos).x;
+        occ += (h-d)*sca;
+        sca *= 0.95;
+    }
+    return clamp( 1.0 - 2.0*occ, 0.0, 1.0 );
+}
+
 
 float shadow(vec3 ro, vec3 rd){
-    float t=.005;
+    float t=0.0;
     float tmax=20.;
 
     vec4 h=map(ro+t*rd);
     float m = 1.0;
     for(int i=0;i<128&&t<tmax;i++){
         h=map(ro+t*rd);
-        if(h.x<.001){m=0.0; break;}
+        if(h.x<.001){m=0.001; break;}
+        m=min(m,16.0*h.x/t);
         t+=h.x;
     }
-    return m;
+    if(t>20.0) t=-1.0;
+    return t;
 
 }
 
@@ -207,24 +237,24 @@ void main(){
         vec3 sun_dir=normalize(vec3(-.8,.4,-.5));
 
         if(tuvw.x>0.0){
-            vec3 pos=tuvw.yzw;
+            vec3 pos=tuvw.x*rd+ro;
             vec3 nor=calcNormal(pos);
-        
-        
-            float sun_dif=clamp(dot(nor,sun_dir),0.,1.);
-            float sky_dif=clamp(.5+.5*dot(nor,vec3(0.,1.,0.)),0.,1.);
-            
-            col=vec3(1. , .7, .5)*sun_dif;
 
-            if(shadow(pos,sun_dir)<0.001)
-                col=mix(col,vec3(0),0.5);
+            vec3 mate =vec3(0.05,0.15,0.02);
+            mate = tuvw.yzw;
 
-            col+=vec3(0., .1, .3)*sky_dif;
+            float occ = calcOcclusion(pos,nor);
 
-            
+            float sun_dif = clamp(dot(nor,sun_dir),0.,1.);
+            float sun_sha = step(shadow( pos+nor*0.004,sun_dir),0.00);
+            float sky_dif = clamp(0.5 + 0.5*dot(nor,vec3(0.0,1.0,0.0)), 0.0, 1.0);
+            float bou_dif = clamp(0.5 + 0.5*dot(nor,vec3(0.0,-1.0,0.0)), 0.0, 1.0);
 
             
-            //col +=.5+.5*nor;
+            col  = mate*  vec3(7.00, 5.00, 4.00)*sun_dif*sun_sha;
+            col += mate*vec3(0.5,0.8,0.9)*sky_dif*occ;
+            col += mate*vec3(0.0784, 0.2863, 0.1059)*bou_dif*occ;
+
         }
         else{
             col=vec3(0.0, 0.6, 1.0) * (0.75+rd.y/4.0);
@@ -236,6 +266,7 @@ void main(){
             col +=(vec3(1.0, 0.9333, 0.0275)-col)*sun_dif;
 
         }
+        col = pow(col, vec3(0.4545));
 
         //col=pow(col,vec3(.45));
         tot+=col;
