@@ -148,8 +148,8 @@ vec4 map(vec3 pos){
 
     //vec3 p =mod(1 + pos,2.0 )-1.0;
 
-    vec3 color=vec3(8.00, 6.00, 4.00);
-    float d = DE_Mandelbulb(pos,color);
+    vec3 color=vec3(0.10, 0.25, 0.00);
+    float d = DE_Tetra(pos);
     
     
     return vec4(d,color);
@@ -253,7 +253,8 @@ void main(){
             
             col  = mate*  vec3(7.00, 5.00, 4.00)*sun_dif*sun_sha;
             col += mate*vec3(0.5,0.8,0.9)*sky_dif*occ;
-            col += mate*vec3(0.0784, 0.2863, 0.1059)*bou_dif*occ;
+            col += mate*vec3(0.3451, 0.2627, 0.1529)*bou_dif*occ;
+            //col=vec3(occ*occ);
 
         }
         else{
