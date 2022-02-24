@@ -157,7 +157,7 @@ vec4 map(vec3 pos){
 
 vec3 calcNormal(vec3 pos)
 {
-    vec2 e=vec2(.001,0.);
+    vec2 e=vec2(0.001,0.0);
     
     return normalize(vec3(
         map(pos+e.xyy).x-map(pos-e.xyy).x,
@@ -166,13 +166,13 @@ vec3 calcNormal(vec3 pos)
 }
 
 vec4 march(vec3 ro,vec3 rd){
-    vec4 res=vec4(-1.);
+    vec4 res=vec4(-1.0);
     
-    float t=.001;
-    float tmax=20.;
+    float t=0.001;
+    float tmax=20.0;
     for(int i=0;i<256&&t<tmax;i++){
         vec4 h=map(ro+t*rd);
-        if(h.x<.001){res=vec4(t,h.yzw);break;}
+        if(h.x<0.001){res=vec4(t,h.yzw);break;}
         t+=h.x;
     }
     return res;
@@ -196,13 +196,13 @@ float calcOcclusion(vec3 pos,vec3 nor )
 
 float shadow(vec3 ro, vec3 rd){
     float t=0.0;
-    float tmax=20.;
+    float tmax=20.0;
 
     vec4 h=map(ro+t*rd);
     float m = 1.0;
     for(int i=0;i<128&&t<tmax;i++){
         h=map(ro+t*rd);
-        if(h.x<.001){m=0.001; break;}
+        if(h.x<0.001){m=0.001; break;}
         m=min(m,16.0*h.x/t);
         t+=h.x;
     }
@@ -234,7 +234,7 @@ void main(){
         
         vec4 tuvw=march(ro,rd);
 
-        vec3 sun_dir=normalize(vec3(-.8,.4,-.5));
+        vec3 sun_dir=normalize(vec3(-0.8,0.4,-0.5));
 
         if(tuvw.x>0.0){
             vec3 pos=tuvw.x*rd+ro;
@@ -245,7 +245,7 @@ void main(){
 
             float occ = calcOcclusion(pos,nor);
 
-            float sun_dif = clamp(dot(nor,sun_dir),0.,1.);
+            float sun_dif = clamp(dot(nor,sun_dir),0.0,1.0);
             float sun_sha = step(shadow( pos+nor*0.004,sun_dir),0.00);
             float sky_dif = clamp(0.5 + 0.5*dot(nor,vec3(0.0,1.0,0.0)), 0.0, 1.0);
             float bou_dif = clamp(0.5 + 0.5*dot(nor,vec3(0.0,-1.0,0.0)), 0.0, 1.0);
@@ -262,7 +262,7 @@ void main(){
 
             
 
-            float sun_dif=clamp(clamp(dot(rd,sun_dir),0.,1.)*40.0 -38,0,1.0 );
+            float sun_dif=clamp(clamp(dot(rd,sun_dir), 0.0, 1.0)*40.0 -38, 0, 1.0 );
 
             col +=(vec3(1.0, 0.9333, 0.0275)-col)*sun_dif;
 
@@ -276,5 +276,5 @@ void main(){
 
     tot += sin(gl_FragCoord.x*114.0)*sin(gl_FragCoord.y*211.1)/512.0;
 
-    fragColor=vec4(tot,1.);
+    fragColor=vec4(tot,1.0);
 }
