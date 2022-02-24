@@ -85,7 +85,7 @@ int main()
             glClearColor(0.0f, 0.0f, 1.0f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT);
 
-            shader.SetUniform1f(glfwGetTime(),"iTime");
+            shader.SetUniform1f( (glm::sin(glfwGetTime()/10.0f) + 1.0f)*7.0f + 1.0f,"iFractVar");
 
             shader.SetUniformVec3(Input::cam->GetPos(), "iPosition"); 
             

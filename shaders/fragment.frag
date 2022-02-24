@@ -6,7 +6,7 @@ uniform vec2 iResolution;
 uniform vec3 iPosition;
 uniform mat3 iDirection;
 uniform float iFov;
-uniform float iTime;
+uniform float iFractVar;
 
 
 float sdSphere(vec3 p,float r)
@@ -106,7 +106,7 @@ float DE_Tetra(vec3 z)
 
 float DE_Mandelbulb(vec3 pos,out vec3 color){
 
-    float power = 13.0;//(sin(0.1*mod(iTime,20.0*3.1414))*0.5+0.5)*6.0+2.0;
+    float power =  iFractVar;//13.0;//(sin(0.1*mod(iTime,20.0*3.1414))*0.5+0.5)*6.0+2.0;
     vec3 w=pos;
     float dz = 1.0;
     float d = dot(w,w);
@@ -149,7 +149,7 @@ vec4 map(vec3 pos){
     //vec3 p =mod(1 + pos,2.0 )-1.0;
 
     vec3 color=vec3(0.10, 0.25, 0.00);
-    float d = DE_Tetra(pos);
+    float d = DE_Mandelbulb(pos, color);
     
     
     return vec4(d,color);
