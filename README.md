@@ -25,6 +25,6 @@ Q/E         -- Roll Left/Right
 
 ## Building
 
-The project requires Cmake and GCC/MinGW(you can probably use other compilers too, but you might run into issues when debugging)
+The project requires Cmake and GCC/MinGW(you can probably use other compilers too, but you might run into issues when debugging).  
 For compiling on linux X11 development(or xkbcommon for wayland) packages are also required
   
