@@ -133,8 +133,8 @@ float DE_Mandelbulb(vec3 pos,out vec3 color){
     color = trap.yzw/max(max(trap.x,trap.y),max(trap.z,trap.w));
 
     vec3 col = vec3(0.01);
-		col = mix( col, vec3(0.5804, 0.4941, 0.2118), clamp(trap.y,0.0,1.0) );
-	 	col = mix( col, vec3(0.0196, 0.3294, 0.4549), clamp(trap.z*trap.z,0.0,1.0) );
+		col = mix( col, vec3(0.1569, 0.0667, 0.9412), clamp(trap.y,0.0,1.0) );
+	 	col = mix( col, vec3(0.5961, 0.0902, 0.7529), clamp(trap.z*trap.z,0.0,1.0) );
         col = mix( col, vec3(0.702, 0.0196, 0.6471), clamp(pow(trap.w,6.0),0.0,1.0) );
         col *= 0.5;
     color = col;
@@ -148,8 +148,8 @@ vec4 map(vec3 pos){
 
     //vec3 p =mod(1 + pos,2.0 )-1.0;
 
-    vec3 color=vec3(0.10, 0.25, 0.00);
-    float d = DE_Mandelbulb(pos, color);
+    vec3 color=vec3(0.1529, 0.0275, 0.1412);
+    float d = DE_Mandelbulb(pos,color);
     
     
     return vec4(d,color);
@@ -246,7 +246,8 @@ void main(){
             float occ = calcOcclusion(pos,nor);
 
             float sun_dif = clamp(dot(nor,sun_dir),0.0,1.0);
-            float sun_sha = step(shadow( pos+nor*0.004,sun_dir),0.00);
+            //float sun_sha = step(shadow( pos+nor*0.004,sun_dir),0.00);
+            float sun_sha = 1.0;
             float sky_dif = clamp(0.5 + 0.5*dot(nor,vec3(0.0,1.0,0.0)), 0.0, 1.0);
             float bou_dif = clamp(0.5 + 0.5*dot(nor,vec3(0.0,-1.0,0.0)), 0.0, 1.0);
 
@@ -258,13 +259,13 @@ void main(){
 
         }
         else{
-            col=vec3(0.0, 0.6, 1.0) * (0.75+rd.y/4.0);
+            col=vec3(0.2627, 0.0118, 0.3608) * (0.6+rd.y*0.5);
 
             
 
             float sun_dif=clamp(clamp(dot(rd,sun_dir), 0.0, 1.0)*40.0 -38, 0, 1.0 );
 
-            col +=(vec3(1.0, 0.9333, 0.0275)-col)*sun_dif;
+            //col +=(vec3(1.0, 0.9333, 0.0275)-col)*sun_dif;
 
         }
         col = pow(col, vec3(0.4545));
