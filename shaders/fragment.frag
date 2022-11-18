@@ -8,6 +8,7 @@ uniform mat3 iDirection;
 uniform float iFov;
 uniform float iFractVar;
 
+float dot2( vec3 v ) { return dot(v,v); }
 
 float sdSphere(vec3 p,float r)
 {
@@ -31,9 +32,66 @@ float sdInfSide(vec3 p,float a){
     float pc = sdCube(p.zx, vec2(a));
     return min(pa,min(pb,pc) );
 }
+void planeFold(inout vec4 z, vec3 p, float n) {
+    z.xyz -= 2.0 * min(0.0, dot(z.xyz, p) - n) * p;
+}
 
+void sierpinskiFold(inout vec4 z) {
+	z.xy -= min(z.x + z.y, 0.0);
+	z.xz -= min(z.x + z.z, 0.0);
+	z.yz -= min(z.y + z.z, 0.0);
+}
 
-float dot2( vec3 v ) { return dot(v,v); }
+void mengerFold(inout vec4 z) {
+	float a = min(z.x - z.y, 0.0);
+	z.x -= a;
+	z.y += a;
+	a = min(z.x - z.z, 0.0);
+	z.x -= a;
+	z.z += a;
+	a = min(z.y - z.z, 0.0);
+	z.y -= a;
+	z.z += a;
+}
+void scaleTranslateFold(inout vec4 z, in float s, in vec3 t) {
+    z.xyz *= s;
+    z.w *= abs(s);
+    z.xyz += t;
+}
+void absFold(inout vec4 z, in vec3 c){
+    z.xyz = abs(z.xyz-c)+c;
+}
+void sphereFold(inout vec4 z, float minR, float maxR) {
+    float r2 = dot2(z.xyz);
+    z *= max(maxR/ max(minR,r2), 1.0);
+}
+void inversionFold(inout vec4 z, float e){
+    z *=  1/(dot2(z.xyz) + e);
+}
+void boxFold(inout vec4 z, vec3 r){
+    z.xyz = clamp(z.xyz, -r, r) * 2.0 - z.xyz;
+}
+void rotX(inout vec4 z, float s, float c) {
+	z.yz = vec2(c*z.y + s*z.z, c*z.z - s*z.y);
+}
+void rotY(inout vec4 z, float s, float c) {
+	z.xz = vec2(c*z.x - s*z.z, c*z.z + s*z.x);
+}
+void rotZ(inout vec4 z, float s, float c) {
+	z.xy = vec2(c*z.x + s*z.y, c*z.y - s*z.x);
+}
+void rotX(inout vec4 z, float a) {
+	rotX(z, sin(a), cos(a));
+}
+void rotY(inout vec4 z, float a) {
+	rotY(z, sin(a), cos(a));
+}
+void rotZ(inout vec4 z, float a) {
+	rotZ(z, sin(a), cos(a));
+}
+
+//void rotx()
+
 
 float udTriangle(vec3 p, vec3 v1, vec3 v2, vec3 v3 )
 {
@@ -150,7 +208,26 @@ vec4 map(vec3 pos){
 
     vec3 color=vec3(0.1529, 0.0275, 0.1412);
     float d = DE_Mandelbulb(pos,color);
-    
+    //vec4 p = vec4(pos,1); // with scale
+    //absFold(p,vec3(0));
+    //scaleTranslateFold(p, 2, vec3(1));
+    /*
+    color = vec3 (0);
+    for(int i=0;i<30;i++){
+        absFold(p, vec3(0));
+        scaleTranslateFold(p, 1.5, vec3(-1.0,-0.5,-0.2));
+        color += (p.xyz)*vec3(0.5,0.3,0);
+        rotX(p,3.61);
+        rotY(p,2.03);
+        
+    }
+    color = normalize(color)/8;
+    //sphereFold(p,0.2,2.0);
+    //scaleTranslateFold(p, 3, vec3(-2,-2, 0));
+        //planeFold(p, vec3(0,0,-1),-1);
+    float d = sdSphere(p.xyz, 1.0)/p.w;
+    */
+
     
     return vec4(d,color);
 }
@@ -168,13 +245,15 @@ vec3 calcNormal(vec3 pos)
 vec4 march(vec3 ro,vec3 rd){
     vec4 res=vec4(-1.0);
     
-    float t=0.001;
+    float t=0.00001;
     float tmax=20.0;
-    for(int i=0;i<256&&t<tmax;i++){
-        vec4 h=map(ro+t*rd);
-        if(h.x<0.001){res=vec4(t,h.yzw);break;}
+    vec4 h;
+    for(int i=0;i<1000&&t<tmax;i++){
+        h=map(ro+t*rd);
+        if(h.x<0.00001){res=vec4(t,h.yzw);break;}
         t+=h.x;
     }
+    if(h.x<max(t*10,1)*0.00001) res.x = t;
     return res;
 }
 
@@ -236,7 +315,7 @@ void main(){
 
         vec3 sun_dir=normalize(vec3(-0.8,0.4,-0.5));
 
-        if(tuvw.x>0.0){
+        if(tuvw.x>-0.5){
             vec3 pos=tuvw.x*rd+ro;
             vec3 nor=calcNormal(pos);
 
