@@ -36,4 +36,4 @@ add_custom_target(
     ${CMAKE_CURRENT_SOURCE_DIR}/shaders ${CMAKE_BINARY_DIR}/out/assets
 )
 
-target_link_libraries(${PROJECT_NAME}  -static-libgcc -static-libstdc++ glm glad glfw ${GLFW_LIBRARIES} )
+target_link_libraries(${PROJECT_NAME} -static -static-libgcc -static-libstdc++ glm glad glfw ${GLFW_LIBRARIES} )
