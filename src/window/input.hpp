@@ -28,7 +28,7 @@
 namespace Input
 {
 
-    Camera *cam = new Camera(0., 0., -5.);
+    Camera *cam = new Camera(0., 0., -2.);
     vec3 rotation = vec3(0,0,0);
     vec3 movement = vec3(0,0,0);
     double time=0;
